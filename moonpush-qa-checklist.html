@@ -1,0 +1,1373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MoonPush QA Checklist</title>
+  <meta name="description" content="A MoonPush-inspired QA checklist page for validating upload, auth, plans, and white-label workflows.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #fbfaf6;
+      --panel: rgba(255, 255, 255, 0.9);
+      --panel-strong: #ffffff;
+      --ink: #111111;
+      --muted: #67645d;
+      --line: rgba(17, 17, 17, 0.09);
+      --line-strong: rgba(17, 17, 17, 0.16);
+      --accent: #0f0f10;
+      --accent-soft: #eceae2;
+      --success: #14532d;
+      --success-bg: #e9f7ee;
+      --danger: #7f1d1d;
+      --danger-bg: #fdecec;
+      --pending: #8a6d1b;
+      --pending-bg: #fff6dc;
+      --glow: radial-gradient(circle at top, rgba(255, 220, 140, 0.32), transparent 44%);
+      --shadow: 0 16px 48px rgba(17, 17, 17, 0.08);
+      --radius-xl: 28px;
+      --radius-lg: 22px;
+      --radius-md: 16px;
+      --radius-sm: 12px;
+      --max: 1180px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      font-family: "Instrument Sans", sans-serif;
+      color: var(--ink);
+      background:
+        var(--glow),
+        linear-gradient(180deg, #fffdf8 0%, #fbfaf6 46%, #f7f4ed 100%);
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    button,
+    input,
+    textarea {
+      font: inherit;
+    }
+
+    .shell {
+      width: min(calc(100% - 32px), var(--max));
+      margin: 0 auto;
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      backdrop-filter: blur(16px);
+      background: rgba(251, 250, 246, 0.76);
+      border-bottom: 1px solid rgba(17, 17, 17, 0.06);
+    }
+
+    .topbar-inner {
+      width: min(calc(100% - 32px), var(--max));
+      margin: 0 auto;
+      padding: 14px 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+    }
+
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      font-family: "Space Grotesk", sans-serif;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+    }
+
+    .brand-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 999px;
+      background: linear-gradient(135deg, #111111 0%, #5e5c58 100%);
+      box-shadow: 0 0 0 5px rgba(17, 17, 17, 0.06);
+    }
+
+    .top-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .pill,
+    .ghost-btn,
+    .solid-btn,
+    .mini-btn {
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.74);
+      color: var(--ink);
+      border-radius: 999px;
+      padding: 11px 16px;
+      transition: transform 160ms ease, border-color 160ms ease, background 160ms ease;
+      cursor: pointer;
+    }
+
+    .pill:hover,
+    .ghost-btn:hover,
+    .solid-btn:hover,
+    .mini-btn:hover {
+      transform: translateY(-1px);
+      border-color: var(--line-strong);
+    }
+
+    .solid-btn {
+      background: var(--accent);
+      color: #ffffff;
+      border-color: var(--accent);
+      box-shadow: 0 10px 30px rgba(17, 17, 17, 0.16);
+    }
+
+    .hero {
+      padding: 58px 0 26px;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 26px;
+      align-items: stretch;
+    }
+
+    .hero-panel,
+    .stat-panel,
+    .feature-panel,
+    .question-card,
+    .note-card,
+    .export-card {
+      background: var(--panel);
+      border: 1px solid rgba(17, 17, 17, 0.08);
+      box-shadow: var(--shadow);
+      border-radius: var(--radius-xl);
+    }
+
+    .hero-panel {
+      padding: 28px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-panel::after {
+      content: "";
+      position: absolute;
+      inset: auto -20% -30% auto;
+      width: 360px;
+      height: 360px;
+      background: radial-gradient(circle, rgba(255, 203, 115, 0.34), transparent 62%);
+      pointer-events: none;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(17, 17, 17, 0.05);
+      color: var(--muted);
+      font-size: 0.88rem;
+    }
+
+    h1,
+    h2,
+    h3 {
+      margin: 0;
+      font-family: "Space Grotesk", sans-serif;
+      letter-spacing: -0.04em;
+      line-height: 0.98;
+    }
+
+    h1 {
+      margin-top: 18px;
+      font-size: clamp(2.9rem, 7vw, 5.5rem);
+      max-width: 12ch;
+    }
+
+    .hero-actions {
+      display: inline-flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 14px;
+    }
+
+    .hero-side {
+      display: grid;
+      grid-template-rows: auto;
+      gap: 18px;
+    }
+
+    .stat-panel {
+      padding: 24px;
+    }
+
+    .stat-label {
+      color: var(--muted);
+      font-size: 0.92rem;
+      margin-bottom: 14px;
+    }
+
+    .stat-value {
+      font-family: "Space Grotesk", sans-serif;
+      font-size: clamp(2.6rem, 6vw, 4.6rem);
+      letter-spacing: -0.06em;
+    }
+
+    .meter {
+      height: 12px;
+      border-radius: 999px;
+      background: rgba(17, 17, 17, 0.08);
+      overflow: hidden;
+      margin: 18px 0 10px;
+    }
+
+    .meter-fill {
+      height: 100%;
+      width: 0;
+      background: linear-gradient(90deg, #111111 0%, #53514d 100%);
+      border-radius: inherit;
+      transition: width 220ms ease;
+    }
+
+    .stat-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      font-size: 0.94rem;
+      color: var(--muted);
+    }
+
+    .summary-list {
+      margin-top: 16px;
+      display: grid;
+      gap: 10px;
+    }
+
+    .summary-item {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 12px 14px;
+      border-radius: var(--radius-sm);
+      background: rgba(17, 17, 17, 0.04);
+    }
+
+    .summary-item strong {
+      font-size: 1.1rem;
+      font-family: "Space Grotesk", sans-serif;
+    }
+
+    .summary-item span {
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+
+    .section {
+      padding: 26px 0;
+    }
+
+    .section-head {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 20px;
+      align-items: end;
+      margin-bottom: 22px;
+    }
+
+    .section-head p,
+    .section-subcopy,
+    .question-meta,
+    .muted {
+      color: var(--muted);
+    }
+
+    .checklist-layout {
+      display: grid;
+      grid-template-columns: 0.75fr 1.25fr;
+      gap: 22px;
+      align-items: start;
+    }
+
+    .note-stack {
+      display: grid;
+      gap: 18px;
+      position: sticky;
+      top: 88px;
+    }
+
+    .note-card,
+    .export-card {
+      padding: 22px;
+    }
+
+    .note-card textarea {
+      width: 100%;
+      min-height: 140px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-md);
+      background: #ffffff;
+      padding: 14px 16px;
+      resize: vertical;
+      margin-top: 14px;
+      line-height: 1.5;
+    }
+
+    .quick-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 16px;
+    }
+
+    .quick-links a {
+      padding: 10px 12px;
+      background: rgba(17, 17, 17, 0.04);
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      font-size: 0.92rem;
+    }
+
+    .export-copy {
+      margin-top: 10px;
+      line-height: 1.55;
+      color: var(--muted);
+    }
+
+    .question-groups {
+      display: grid;
+      gap: 18px;
+    }
+
+    .group-block {
+      display: grid;
+      gap: 14px;
+    }
+
+    .group-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 0 4px;
+    }
+
+    .group-head h3 {
+      font-size: 1.6rem;
+    }
+
+    .group-head span {
+      color: var(--muted);
+      font-size: 0.94rem;
+    }
+
+    .question-card {
+      padding: 22px;
+    }
+
+    .question-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 18px;
+      align-items: start;
+    }
+
+    .question-number {
+      width: 44px;
+      height: 44px;
+      flex: 0 0 auto;
+      display: inline-grid;
+      place-items: center;
+      border-radius: 14px;
+      background: rgba(17, 17, 17, 0.06);
+      font-family: "Space Grotesk", sans-serif;
+      font-weight: 700;
+    }
+
+    .question-title h4 {
+      margin: 0;
+      font-size: 1.18rem;
+      line-height: 1.35;
+    }
+
+    .question-meta {
+      margin-top: 8px;
+      font-size: 0.93rem;
+      line-height: 1.5;
+    }
+
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 108px;
+      padding: 10px 12px;
+      border-radius: 999px;
+      background: var(--pending-bg);
+      color: var(--pending);
+      font-size: 0.84rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .status-pill.pass {
+      background: var(--success-bg);
+      color: var(--success);
+    }
+
+    .status-pill.fail {
+      background: var(--danger-bg);
+      color: var(--danger);
+    }
+
+    .status-pill.pending {
+      background: var(--pending-bg);
+      color: var(--pending);
+    }
+
+    .question-copy {
+      display: grid;
+      gap: 14px;
+      margin-top: 18px;
+    }
+
+    .expectation,
+    .test-notes {
+      padding: 14px 16px;
+      border-radius: var(--radius-md);
+      background: rgba(17, 17, 17, 0.04);
+      border: 1px solid var(--line);
+      line-height: 1.55;
+    }
+
+    .expectation strong,
+    .test-notes strong {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 0.94rem;
+    }
+
+    .status-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .status-btn {
+      border-radius: 999px;
+      padding: 10px 14px;
+      border: 1px solid var(--line);
+      background: #ffffff;
+      cursor: pointer;
+      transition: all 160ms ease;
+    }
+
+    .status-btn.active-pass {
+      background: var(--success-bg);
+      border-color: rgba(20, 83, 45, 0.18);
+      color: var(--success);
+    }
+
+    .status-btn.active-fail {
+      background: var(--danger-bg);
+      border-color: rgba(127, 29, 29, 0.18);
+      color: var(--danger);
+    }
+
+    .status-btn.active-pending {
+      background: var(--pending-bg);
+      border-color: rgba(138, 109, 27, 0.2);
+      color: var(--pending);
+    }
+
+    .question-card textarea {
+      width: 100%;
+      min-height: 102px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-md);
+      background: #ffffff;
+      padding: 14px 16px;
+      resize: vertical;
+      margin-top: 14px;
+      line-height: 1.5;
+    }
+
+    .footer {
+      padding: 28px 0 40px;
+    }
+
+    .tiny {
+      font-size: 0.86rem;
+      color: var(--muted);
+    }
+
+    @media (max-width: 1100px) {
+      .hero-grid,
+      .checklist-layout,
+      .feature-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .note-stack {
+        position: static;
+      }
+    }
+
+    @media (max-width: 760px) {
+      .topbar-inner {
+        align-items: start;
+      }
+
+      .hero {
+        padding-top: 34px;
+      }
+
+      .hero-panel,
+      .stat-panel,
+      .feature-panel,
+      .question-card,
+      .note-card,
+      .export-card {
+        border-radius: 22px;
+      }
+
+      .section-head,
+      .question-top,
+      .group-head {
+        grid-template-columns: 1fr;
+        display: grid;
+      }
+
+      .question-top {
+        gap: 14px;
+      }
+
+      .status-pill {
+        justify-self: start;
+      }
+
+      h1 {
+        font-size: clamp(2.5rem, 16vw, 4rem);
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="brand">
+        <span class="brand-dot"></span>
+        <span>MoonPush QA</span>
+      </div>
+      <div class="top-actions">
+        <a class="pill" href="#checklist">Checklist</a>
+        <button class="ghost-btn" id="copySummaryBtn" type="button">Copy Summary</button>
+        <button class="ghost-btn" id="exportPdfBtn" type="button">Export PDF</button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="shell hero-grid">
+        <article class="hero-panel">
+          <h1>Test the link before the file finishes uploading.</h1>
+          <div class="hero-actions">
+            <a class="solid-btn" href="#checklist">Start QA Run</a>
+            <a class="ghost-btn" href="https://www.moonpush.com/" target="_blank" rel="noreferrer">Open MoonPush</a>
+          </div>
+        </article>
+
+        <div class="hero-side">
+          <section class="stat-panel">
+            <div class="stat-label">Run progress</div>
+            <div class="stat-value"><span id="completedCount">0</span>/<span id="totalCount">8</span></div>
+            <div class="meter" aria-hidden="true">
+              <div class="meter-fill" id="progressFill"></div>
+            </div>
+            <div class="stat-row">
+              <span id="progressLabel">0% complete</span>
+              <span id="pendingLabel">8 pending</span>
+            </div>
+            <div class="summary-list">
+              <div class="summary-item">
+                <div>
+                  <strong id="passCount">0</strong>
+                  <span>Passed checks</span>
+                </div>
+                <div>
+                  <strong id="failCount">0</strong>
+                  <span>Failed checks</span>
+                </div>
+              </div>
+              <div class="summary-item">
+                <div>
+                  <strong id="noteCount">0</strong>
+                  <span>Notes captured</span>
+                </div>
+                <div>
+                  <strong id="sessionState">Draft</strong>
+                  <span>Run state</span>
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="checklist">
+      <div class="shell checklist-layout">
+        <aside class="note-stack">
+          <section class="note-card">
+            <div class="eyebrow">Run context</div>
+            <h2>Tester notes</h2>
+            <p class="section-subcopy">Capture environment, browser, account type, or reproduction hints for this QA run.</p>
+            <textarea id="globalNotes" placeholder="Example: Tested on Chrome 139, free account, clean browser profile, custom domain already verified."></textarea>
+            <div class="quick-links">
+              <a href="#group-upload">Upload rules</a>
+              <a href="#group-live">Live transfer</a>
+              <a href="#group-auth">Auth & plans</a>
+              <a href="#group-white-label">White label</a>
+            </div>
+          </section>
+
+          <section class="export-card">
+            <div class="eyebrow">Fast sharing</div>
+            <h2>QA handoff</h2>
+            <p class="export-copy">
+              Use <strong>Copy Summary</strong> for quick chat updates or <strong>Export PDF</strong> for a shareable report.
+            </p>
+            <div class="status-actions">
+              <button class="mini-btn" id="markAllPendingBtn" type="button">Reset to Pending</button>
+              <button class="mini-btn" id="clearNotesBtn" type="button">Clear Notes</button>
+            </div>
+          </section>
+        </aside>
+
+        <div class="question-groups">
+          <section class="group-block" id="group-upload">
+            <div class="group-head">
+              <div>
+                <div class="eyebrow">Upload rules</div>
+                <h3>Share links must stay inside free-plan rules.</h3>
+              </div>
+              <span>3 checks</span>
+            </div>
+
+            <article class="question-card" data-question="upload-limit">
+              <div class="question-top">
+                <div style="display:flex; gap:14px; align-items:flex-start;">
+                  <div class="question-number">1</div>
+                  <div class="question-title">
+                    <h4>File 50 MB se zyada upload na ho.</h4>
+                    <div class="question-meta">Verify that the uploader blocks files above the free upload limit and communicates the restriction clearly.</div>
+                  </div>
+                </div>
+                <div class="status-pill pending" data-status-label>Pending</div>
+              </div>
+              <div class="question-copy">
+                <div class="expectation">
+                  <strong>Expected result</strong>
+                  Files above 50 MB should be rejected on the free flow before or during upload with a visible, accurate error message. Files at or below 50 MB should still work normally.
+                </div>
+                <div class="test-notes">
+                  <strong>Suggested test</strong>
+                  Try one file just under 50 MB, one exactly near the limit, and one clearly above the limit. Confirm both drag-and-drop and click-to-browse behavior.
+                </div>
+              </div>
+              <div class="status-actions">
+                <button class="status-btn" data-status-value="pass" type="button">Pass</button>
+                <button class="status-btn" data-status-value="fail" type="button">Fail</button>
+                <button class="status-btn" data-status-value="pending" type="button">Pending</button>
+              </div>
+              <textarea data-notes placeholder="Write evidence, screenshots taken, exact file sizes tested, and observed messages."></textarea>
+            </article>
+
+            <article class="question-card" data-question="expiry-30-min">
+              <div class="question-top">
+                <div style="display:flex; gap:14px; align-items:flex-start;">
+                  <div class="question-number">2</div>
+                  <div class="question-title">
+                    <h4>30 minutes ke baad link expire ho jaye.</h4>
+                    <div class="question-meta">Validate that the free link lifetime expires when expected and that the expired state is clear to the receiver.</div>
+                  </div>
+                </div>
+                <div class="status-pill pending" data-status-label>Pending</div>
+              </div>
+              <div class="question-copy">
+                <div class="expectation">
+                  <strong>Expected result</strong>
+                  A free link should stop working after 30 minutes and show a proper expired state rather than a broken page or silent failure.
+                </div>
+                <div class="test-notes">
+                  <strong>Suggested test</strong>
+                  Create a free link, confirm it works immediately, then re-open it after the expiry window. If you have admin tools or logs, confirm expiry timing server-side too.
+                </div>
+              </div>
+              <div class="status-actions">
+                <button class="status-btn" data-status-value="pass" type="button">Pass</button>
+                <button class="status-btn" data-status-value="fail" type="button">Fail</button>
+                <button class="status-btn" data-status-value="pending" type="button">Pending</button>
+              </div>
+              <textarea data-notes placeholder="Note expiry timestamp, timezone used, any grace period, and what the user sees after expiry."></textarea>
+            </article>
+
+            <article class="question-card" data-question="one-time-download">
+              <div class="question-top">
+                <div style="display:flex; gap:14px; align-items:flex-start;">
+                  <div class="question-number">3</div>
+                  <div class="question-title">
+                    <h4>One-time link sirf ek dafa download allow kare.</h4>
+                    <div class="question-meta">Check that a one-time link is consumed after the first successful download and cannot be reused.</div>
+                  </div>
+                </div>
+                <div class="status-pill pending" data-status-label>Pending</div>
+              </div>
+              <div class="question-copy">
+                <div class="expectation">
+                  <strong>Expected result</strong>
+                  The first successful receiver session can download the file. Any second attempt should show a consumed or expired state and must not deliver the file again.
+                </div>
+                <div class="test-notes">
+                  <strong>Suggested test</strong>
+                  Open the same one-time link in two sessions or browsers. Confirm race behavior too: whichever actually completes first should consume the link.
+                </div>
+              </div>
+              <div class="status-actions">
+                <button class="status-btn" data-status-value="pass" type="button">Pass</button>
+                <button class="status-btn" data-status-value="fail" type="button">Fail</button>
+                <button class="status-btn" data-status-value="pending" type="button">Pending</button>
+              </div>
+              <textarea data-notes placeholder="Record first receiver path, second attempt behavior, and whether any partial downloads bypassed the restriction."></textarea>
+            </article>
+          </section>
+
+          <section class="group-block" id="group-live">
+            <div class="group-head">
+              <div>
+                <div class="eyebrow">Realtime visibility</div>
+                <h3>Sender aur receiver dono ek waqt mein dekh sakein.</h3>
+              </div>
+              <span>1 check</span>
+            </div>
+
+            <article class="question-card" data-question="sender-receiver-live">
+              <div class="question-top">
+                <div style="display:flex; gap:14px; align-items:flex-start;">
+                  <div class="question-number">4</div>
+                  <div class="question-title">
+                    <h4>At the same time sender and receiver dekh sakain.</h4>
+                    <div class="question-meta">Confirm live progress sync between uploader and receiver without stale state, refresh-only updates, or blocked download handoff.</div>
+                  </div>
+                </div>
+                <div class="status-pill pending" data-status-label>Pending</div>
+              </div>
+              <div class="question-copy">
+                <div class="expectation">
+                  <strong>Expected result</strong>
+                  The sender sees upload progress while the receiver can open the share link immediately and observe real-time progress or readiness without needing manual refreshes.
+                </div>
+                <div class="test-notes">
+                  <strong>Suggested test</strong>
+                  Start a larger upload, open the shared link in another device or incognito session right away, and compare progress indicators on both sides.
+                </div>
+              </div>
+              <div class="status-actions">
+                <button class="status-btn" data-status-value="pass" type="button">Pass</button>
+                <button class="status-btn" data-status-value="fail" type="button">Fail</button>
+                <button class="status-btn" data-status-value="pending" type="button">Pending</button>
+              </div>
+              <textarea data-notes placeholder="Capture whether progress is delayed, mismatched, auto-updated, or blocked until upload completes."></textarea>
+            </article>
+          </section>
+
+          <section class="group-block" id="group-auth">
+            <div class="group-head">
+              <div>
+                <div class="eyebrow">Accounts and billing</div>
+                <h3>Signup, plans, and licensing should feel predictable.</h3>
+              </div>
+              <span>3 checks</span>
+            </div>
+
+            <article class="question-card" data-question="signup-signin">
+              <div class="question-top">
+                <div style="display:flex; gap:14px; align-items:flex-start;">
+                  <div class="question-number">5</div>
+                  <div class="question-title">
+                    <h4>Sign up aur sign in sahi kaam kare, email aur direct dono se.</h4>
+                    <div class="question-meta">Validate normal auth, error handling, account creation, and the direct sign-in path if it exists.</div>
+                  </div>
+                </div>
+                <div class="status-pill pending" data-status-label>Pending</div>
+              </div>
+              <div class="question-copy">
+                <div class="expectation">
+                  <strong>Expected result</strong>
+                  New account creation succeeds, login works reliably, invalid credentials show correct errors, and both email-based and direct entry paths behave consistently.
+                </div>
+                <div class="test-notes">
+                  <strong>Suggested test</strong>
+                  Test fresh registration, repeated login, logout, wrong password, and any direct or magic-link flow mentioned in the product.
+                </div>
+              </div>
+              <div class="status-actions">
+                <button class="status-btn" data-status-value="pass" type="button">Pass</button>
+                <button class="status-btn" data-status-value="fail" type="button">Fail</button>
+                <button class="status-btn" data-status-value="pending" type="button">Pending</button>
+              </div>
+              <textarea data-notes placeholder="List accounts used, auth methods tested, edge cases, and any redirect/session issues."></textarea>
+            </article>
+
+            <article class="question-card" data-question="free-plan">
+              <div class="question-top">
+                <div style="display:flex; gap:14px; align-items:flex-start;">
+                  <div class="question-number">6</div>
+                  <div class="question-title">
+                    <h4>Free plan main sirf free wali cheezein hon, kuch paid na ho.</h4>
+                    <div class="question-meta">Check that free-tier users do not accidentally unlock paid-only features and that upsell boundaries are accurate.</div>
+                  </div>
+                </div>
+                <div class="status-pill pending" data-status-label>Pending</div>
+              </div>
+              <div class="question-copy">
+                <div class="expectation">
+                  <strong>Expected result</strong>
+                  Free users should only access free-plan capabilities. Paid-only features should be clearly marked, blocked correctly, and never behave as silently broken.
+                </div>
+                <div class="test-notes">
+                  <strong>Suggested test</strong>
+                  Review upload limits, expiry settings, dashboard controls, and any premium toggles. Confirm nothing paid appears unlocked for a free account.
+                </div>
+              </div>
+              <div class="status-actions">
+                <button class="status-btn" data-status-value="pass" type="button">Pass</button>
+                <button class="status-btn" data-status-value="fail" type="button">Fail</button>
+                <button class="status-btn" data-status-value="pending" type="button">Pending</button>
+              </div>
+              <textarea data-notes placeholder="Mention exact free account behavior, hidden paywalls, unexpected prompts, or feature leakage."></textarea>
+            </article>
+
+            <article class="question-card" data-question="license-activation">
+              <div class="question-top">
+                <div style="display:flex; gap:14px; align-items:flex-start;">
+                  <div class="question-number">7</div>
+                  <div class="question-title">
+                    <h4>License activation sahi kaam kare.</h4>
+                    <div class="question-meta">Validate that a valid license upgrades access correctly and invalid or reused keys are handled safely.</div>
+                  </div>
+                </div>
+                <div class="status-pill pending" data-status-label>Pending</div>
+              </div>
+              <div class="question-copy">
+                <div class="expectation">
+                  <strong>Expected result</strong>
+                  Valid activation updates the account state immediately or after a clear sync step. Invalid licenses should fail with helpful messaging and no partial upgrade.
+                </div>
+                <div class="test-notes">
+                  <strong>Suggested test</strong>
+                  Try a valid license, an invalid license, and if possible a previously used or expired license. Confirm what changes in UI and account entitlements.
+                </div>
+              </div>
+              <div class="status-actions">
+                <button class="status-btn" data-status-value="pass" type="button">Pass</button>
+                <button class="status-btn" data-status-value="fail" type="button">Fail</button>
+                <button class="status-btn" data-status-value="pending" type="button">Pending</button>
+              </div>
+              <textarea data-notes placeholder="Note activation timing, entitlements unlocked, error messages, and whether a refresh/sign-out is required."></textarea>
+            </article>
+          </section>
+
+          <section class="group-block" id="group-white-label">
+            <div class="group-head">
+              <div>
+                <div class="eyebrow">White-label</div>
+                <h3>Custom brand workflows should be fully usable.</h3>
+              </div>
+              <span>1 grouped check</span>
+            </div>
+
+            <article class="question-card" data-question="white-label">
+              <div class="question-top">
+                <div style="display:flex; gap:14px; align-items:flex-start;">
+                  <div class="question-number">8</div>
+                  <div class="question-title">
+                    <h4>White-label features check karein: domain attach + verify, design page, file links, analytics, Google Analytics.</h4>
+                    <div class="question-meta">Treat this as one parent scenario covering all branded-client setup and measurement paths.</div>
+                  </div>
+                </div>
+                <div class="status-pill pending" data-status-label>Pending</div>
+              </div>
+              <div class="question-copy">
+                <div class="expectation">
+                  <strong>Expected result</strong>
+                  Custom domain setup should verify cleanly, branded design changes should reflect on public pages, file links should respect white-label output, analytics should populate, and Google Analytics integration should send expected events or page views.
+                </div>
+                <div class="test-notes">
+                  <strong>Suggested test</strong>
+                  Walk the full white-label setup from blank state to verified domain, branded upload/download pages, branded links, analytics visibility, and Google Analytics wiring.
+                </div>
+                <div class="test-notes">
+                  <strong>Sub-check ideas</strong>
+                  Domain attach, DNS verification, SSL readiness, design save/publish, branded file link rendering, internal analytics freshness, and GA event validation in DebugView or a similar console.
+                </div>
+              </div>
+              <div class="status-actions">
+                <button class="status-btn" data-status-value="pass" type="button">Pass</button>
+                <button class="status-btn" data-status-value="fail" type="button">Fail</button>
+                <button class="status-btn" data-status-value="pending" type="button">Pending</button>
+              </div>
+              <textarea data-notes placeholder="Break down each white-label sub-feature here: domain verify, design page, file links, analytics, GA."></textarea>
+            </article>
+          </section>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="shell">
+      <p class="tiny" style="padding: 16px 2px 0;">Local autosave is enabled in your browser for every status and note on this page.</p>
+    </div>
+  </footer>
+
+  <script>
+    const STORAGE_KEY = "moonpush-qa-checklist-v2";
+    const questionMeta = {
+      "upload-limit": { title: "1. File 50 MB se zyada upload na ho." },
+      "expiry-30-min": { title: "2. 30 minutes ke baad link expire ho jaye." },
+      "one-time-download": { title: "3. One-time link sirf ek dafa download allow kare." },
+      "sender-receiver-live": { title: "4. At the same time sender and receiver dekh sakain." },
+      "signup-signin": { title: "5. Sign up aur sign in sahi kaam kare, email aur direct dono se." },
+      "free-plan": { title: "6. Free plan main sirf free wali cheezein hon, kuch paid na ho." },
+      "license-activation": { title: "7. License activation sahi kaam kare." },
+      "white-label": { title: "8. White-label features check karein: domain attach + verify, design page, file links, analytics, Google Analytics." }
+    };
+    const defaultState = {
+      globalNotes: "",
+      questions: {
+        "upload-limit": { status: "pending", notes: "" },
+        "expiry-30-min": { status: "pending", notes: "" },
+        "one-time-download": { status: "pending", notes: "" },
+        "sender-receiver-live": { status: "pending", notes: "" },
+        "signup-signin": { status: "pending", notes: "" },
+        "free-plan": { status: "pending", notes: "" },
+        "license-activation": { status: "pending", notes: "" },
+        "white-label": { status: "pending", notes: "" }
+      }
+    };
+
+    const statusClassMap = {
+      pass: "pass",
+      fail: "fail",
+      pending: "pending"
+    };
+
+    function deepCopy(value) {
+      return JSON.parse(JSON.stringify(value));
+    }
+
+    function loadState() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return deepCopy(defaultState);
+        const parsed = JSON.parse(raw);
+        return {
+          globalNotes: parsed.globalNotes || "",
+          questions: { ...defaultState.questions, ...(parsed.questions || {}) }
+        };
+      } catch (error) {
+        return deepCopy(defaultState);
+      }
+    }
+
+    let state = loadState();
+
+    function saveState() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      updateSummary();
+    }
+
+    function statusLabel(status) {
+      if (status === "pass") return "Passed";
+      if (status === "fail") return "Failed";
+      return "Pending";
+    }
+
+    function escapeHtml(value) {
+      return String(value)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#39;");
+    }
+
+    function reportHtml() {
+      const payload = exportPayload();
+      const generatedAt = new Date(payload.exportedAt).toLocaleString();
+      const cards = Object.keys(questionMeta).map((key) => {
+        const item = payload.questions[key];
+        const notes = item.notes.trim()
+          ? `<div class="notes">${escapeHtml(item.notes.trim())}</div>`
+          : `<div class="notes muted">No tester notes recorded.</div>`;
+
+        return `
+          <section class="card">
+            <div class="card-head">
+              <h2>${escapeHtml(questionMeta[key].title)}</h2>
+              <span class="badge ${item.status}">${escapeHtml(statusLabel(item.status))}</span>
+            </div>
+            ${notes}
+          </section>
+        `;
+      }).join("");
+
+      const globalNotes = payload.globalNotes.trim()
+        ? `<section class="card"><h2>Global tester notes</h2><div class="notes">${escapeHtml(payload.globalNotes.trim())}</div></section>`
+        : "";
+
+      return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MoonPush QA Report</title>
+  <style>
+    :root {
+      --ink: #111111;
+      --muted: #666666;
+      --line: #dddddd;
+      --panel: #ffffff;
+      --bg: #f6f3eb;
+      --pass-bg: #e9f7ee;
+      --pass-ink: #14532d;
+      --fail-bg: #fdecec;
+      --fail-ink: #7f1d1d;
+      --pending-bg: #fff6dc;
+      --pending-ink: #8a6d1b;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      padding: 32px;
+      color: var(--ink);
+      background: var(--bg);
+      font-family: Arial, sans-serif;
+    }
+    .wrap {
+      max-width: 920px;
+      margin: 0 auto;
+    }
+    .hero, .card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 24px;
+      margin-bottom: 18px;
+    }
+    h1, h2, h3 {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      line-height: 1.2;
+    }
+    h1 {
+      font-size: 32px;
+      margin-bottom: 8px;
+    }
+    h2 {
+      font-size: 20px;
+    }
+    p {
+      margin: 0;
+      line-height: 1.6;
+    }
+    .meta {
+      color: var(--muted);
+      margin-top: 6px;
+      font-size: 14px;
+    }
+    .summary {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 18px;
+    }
+    .metric {
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 14px;
+      background: #fafafa;
+    }
+    .metric strong {
+      display: block;
+      font-size: 24px;
+      margin-bottom: 4px;
+    }
+    .card-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: start;
+      margin-bottom: 14px;
+    }
+    .badge {
+      padding: 8px 12px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      white-space: nowrap;
+    }
+    .badge.pass { background: var(--pass-bg); color: var(--pass-ink); }
+    .badge.fail { background: var(--fail-bg); color: var(--fail-ink); }
+    .badge.pending { background: var(--pending-bg); color: var(--pending-ink); }
+    .notes {
+      white-space: pre-wrap;
+      line-height: 1.6;
+      font-size: 15px;
+    }
+    .muted {
+      color: var(--muted);
+    }
+    .hint {
+      margin-top: 14px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+    @media print {
+      body {
+        padding: 0;
+        background: #ffffff;
+      }
+      .hero, .card, .metric {
+        break-inside: avoid;
+      }
+    }
+    @media (max-width: 720px) {
+      body { padding: 18px; }
+      .summary { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .card-head { flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <section class="hero">
+      <h1>MoonPush QA Report</h1>
+      <p>Checklist status summary for the current browser session.</p>
+      <div class="meta">Generated: ${escapeHtml(generatedAt)}</div>
+      <div class="summary">
+        <div class="metric">
+          <strong>${payload.summary.total}</strong>
+          <span>Total checks</span>
+        </div>
+        <div class="metric">
+          <strong>${payload.summary.passed}</strong>
+          <span>Passed</span>
+        </div>
+        <div class="metric">
+          <strong>${payload.summary.failed}</strong>
+          <span>Failed</span>
+        </div>
+        <div class="metric">
+          <strong>${payload.summary.pending}</strong>
+          <span>Pending</span>
+        </div>
+      </div>
+      <div class="hint">Choose “Save as PDF” in the print dialog to download this report as a PDF file.</div>
+    </section>
+    ${globalNotes}
+    ${cards}
+  </div>
+  <script>
+    window.addEventListener('load', () => {
+      setTimeout(() => window.print(), 250);
+    });
+    window.addEventListener('afterprint', () => window.close());
+  <\/script>
+</body>
+</html>`;
+    }
+
+    function updateQuestionCard(card, questionId) {
+      const data = state.questions[questionId];
+      const label = card.querySelector("[data-status-label]");
+      label.textContent = statusLabel(data.status);
+      label.className = `status-pill ${statusClassMap[data.status]}`;
+
+      card.querySelectorAll(".status-btn").forEach((button) => {
+        const value = button.dataset.statusValue;
+        button.classList.remove("active-pass", "active-fail", "active-pending");
+        if (value === data.status) {
+          button.classList.add(`active-${value}`);
+        }
+      });
+
+      const notesArea = card.querySelector("textarea[data-notes]");
+      if (notesArea && notesArea.value !== data.notes) {
+        notesArea.value = data.notes;
+      }
+    }
+
+    function updateSummary() {
+      const entries = Object.values(state.questions);
+      const total = entries.length;
+      const pass = entries.filter((item) => item.status === "pass").length;
+      const fail = entries.filter((item) => item.status === "fail").length;
+      const pending = entries.filter((item) => item.status === "pending").length;
+      const completed = pass + fail;
+      const progress = Math.round((completed / total) * 100);
+      const noteCount = entries.filter((item) => item.notes.trim()).length + (state.globalNotes.trim() ? 1 : 0);
+
+      document.getElementById("completedCount").textContent = completed;
+      document.getElementById("totalCount").textContent = total;
+      document.getElementById("progressFill").style.width = `${progress}%`;
+      document.getElementById("progressLabel").textContent = `${progress}% complete`;
+      document.getElementById("pendingLabel").textContent = `${pending} pending`;
+      document.getElementById("passCount").textContent = pass;
+      document.getElementById("failCount").textContent = fail;
+      document.getElementById("noteCount").textContent = noteCount;
+      document.getElementById("sessionState").textContent =
+        fail > 0 ? "Needs review" : completed === total ? "Ready" : completed > 0 ? "In progress" : "Draft";
+    }
+
+    function exportPayload() {
+      return {
+        exportedAt: new Date().toISOString(),
+        summary: {
+          total: Object.keys(state.questions).length,
+          passed: Object.values(state.questions).filter((item) => item.status === "pass").length,
+          failed: Object.values(state.questions).filter((item) => item.status === "fail").length,
+          pending: Object.values(state.questions).filter((item) => item.status === "pending").length
+        },
+        globalNotes: state.globalNotes,
+        questions: state.questions
+      };
+    }
+
+    function summaryText() {
+      const payload = exportPayload();
+      const lines = [
+        "MoonPush QA Summary",
+        `Exported: ${payload.exportedAt}`,
+        `Passed: ${payload.summary.passed}`,
+        `Failed: ${payload.summary.failed}`,
+        `Pending: ${payload.summary.pending}`,
+        ""
+      ];
+
+      for (const [id, data] of Object.entries(payload.questions)) {
+        lines.push(`${questionMeta[id].title}: ${statusLabel(data.status)}`);
+        if (data.notes.trim()) {
+          lines.push(`Notes: ${data.notes.trim()}`);
+        }
+        lines.push("");
+      }
+
+      if (payload.globalNotes.trim()) {
+        lines.push("Global notes:");
+        lines.push(payload.globalNotes.trim());
+      }
+
+      return lines.join("\n");
+    }
+
+    document.getElementById("globalNotes").value = state.globalNotes;
+    document.getElementById("globalNotes").addEventListener("input", (event) => {
+      state.globalNotes = event.target.value;
+      saveState();
+    });
+
+    document.querySelectorAll(".question-card").forEach((card) => {
+      const questionId = card.dataset.question;
+      updateQuestionCard(card, questionId);
+
+      card.querySelectorAll(".status-btn").forEach((button) => {
+        button.addEventListener("click", () => {
+          state.questions[questionId].status = button.dataset.statusValue;
+          updateQuestionCard(card, questionId);
+          saveState();
+        });
+      });
+
+      card.querySelector("textarea[data-notes]").addEventListener("input", (event) => {
+        state.questions[questionId].notes = event.target.value;
+        saveState();
+      });
+    });
+
+    document.getElementById("copySummaryBtn").addEventListener("click", async () => {
+      const button = document.getElementById("copySummaryBtn");
+      const original = button.textContent;
+      try {
+        await navigator.clipboard.writeText(summaryText());
+        button.textContent = "Copied";
+      } catch (error) {
+        button.textContent = "Copy failed";
+      }
+      setTimeout(() => {
+        button.textContent = original;
+      }, 1500);
+    });
+
+    document.getElementById("exportPdfBtn").addEventListener("click", () => {
+      const popup = window.open("", "_blank");
+      if (!popup) {
+        window.alert("Please allow popups to export the PDF report.");
+        return;
+      }
+      popup.document.open();
+      popup.document.write(reportHtml());
+      popup.document.close();
+    });
+
+    document.getElementById("markAllPendingBtn").addEventListener("click", () => {
+      for (const key of Object.keys(state.questions)) {
+        state.questions[key].status = "pending";
+      }
+      document.querySelectorAll(".question-card").forEach((card) => {
+        updateQuestionCard(card, card.dataset.question);
+      });
+      saveState();
+    });
+
+    document.getElementById("clearNotesBtn").addEventListener("click", () => {
+      state.globalNotes = "";
+      document.getElementById("globalNotes").value = "";
+      for (const key of Object.keys(state.questions)) {
+        state.questions[key].notes = "";
+      }
+      document.querySelectorAll(".question-card textarea[data-notes]").forEach((area) => {
+        area.value = "";
+      });
+      saveState();
+    });
+
+    updateSummary();
+  </script>
+</body>
+</html>
